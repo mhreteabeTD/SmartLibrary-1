@@ -1,0 +1,35 @@
+{% extends './base.html' %}
+
+{% block content %}
+<div class="my-4">
+    <h2>Configure Library</h2>
+
+    <!-- Button to Redirect to Add Level Form -->
+    <a href="{% url 'add_library_level' %}" class="btn btn-primary mb-3">Add Level</a>
+
+    <!-- List Existing Library Levels -->
+    <div class="mt-4">
+        {% for level in library_levels %}
+        <div class="card mt-2">
+            <div class="card-header">
+                Level {{ level.level_number }} - {{ level.description }}
+                <!-- Button to Add Shelves to the Level -->
+                <a href="{% url 'add_shelf' level.id %}" class="btn btn-sm btn-outline-primary ml-2">Add Shelf</a>
+            </div>
+            <div class="card-body">
+                <h5>Shelves on this Level:</h5>
+                <ul>
+                    {% for shelf in level.shelves.all %}
+                    <li>
+                        Shelf {{ shelf.shelf_number }} - {{ shelf.description }}
+                        <!-- Link to Edit Shelf -->
+                        <a href="{% url 'edit_shelf' shelf.id %}" class="btn btn-sm btn-outline-secondary ml-2">Edit</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

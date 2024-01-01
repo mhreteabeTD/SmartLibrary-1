@@ -1,0 +1,76 @@
+version: '3.8'
+services:
+  
+  book_management:
+    build: ./book_management
+    volumes:
+      - ./book_management:/usr/src/app
+    networks:
+      - SMART_LIBRARY_NETWORK
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    
+  
+  # rfid-scanner:
+  #   build: ./rfid-reader
+  #   volumes:
+  #     - ./rfid-reader:/usr/src/rfid #mount for live code updates
+  #   depends_on:
+  #     - mosquitto
+
+  # occupancy-sensor:
+  #   build: ./occupancy-sensor
+  #   volumes:
+  #     - ./occupancy-sensor:/usr/src/occupancy #mount for live code updates
+  #   depends_on:
+  #     - mosquitto
+  
+  # python-app:
+  #   build: ./python-app
+  #   volumes:
+  #     - ./python-app:/usr/src/app #mount for live code updates
+  #   depends_on:
+  #     - mosquitto
+  
+  # node-red:
+  #   image: nodered/node-red:latest
+  #   volumes:
+  #     - node_red_data:/data #persistent volume for node-red data
+  #   ports:
+  #     - "1880:1880"
+  #   depends_on:
+  #     - mosquitto
+  
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: SMART_LIBRARY_DB
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    networks:
+      - SMART_LIBRARY_NETWORK
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+
+  # mosquitto:
+  #   image: eclipse-mosquitto:latest
+  #   ports:
+  #     - "1883:1883"
+  #   volumes:
+  #     - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+  #     - mosquitto_data:/mosquitto/data
+  #     - mosquitto_log:/mosquitto/log
+
+volumes:
+  mosquitto_data:
+  mosquitto_log:
+  node_red_data:
+  postgres_data:
+networks:
+  SMART_LIBRARY_NETWORK:

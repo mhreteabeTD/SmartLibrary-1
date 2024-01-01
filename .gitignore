@@ -1,0 +1,39 @@
+# General
+*.log
+*.env
+*.pyc
+pycache/
+
+# Django-specific
+*.pyc
+*~
+/pycache/
+myvenv/
+/static
+.DS_Store
+
+# Node.js/NPM (for Node-RED)
+node_modules/
+npm-debug.log
+package-lock.json
+
+# Mosquitto
+mosquitto/data/*
+mosquitto/log/*
+
+# PostgreSQL
+# If you have any SQL dump files or specific configuration files, include them here
+*.sql
+*.sql.gz
+*.dump
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+
+# Operating System
+.DS_Store
+Thumbs.db
