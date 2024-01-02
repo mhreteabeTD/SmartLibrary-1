@@ -121,6 +121,27 @@ def add_shelf(request,level_number):
         form = ShelfForm()
     return render(request, 'bookmanager/add_shelve.html' , {'form':form})
 
+
+def add_section(request, level_number):
+    try:
+        level = LibraryLevel.objects.get(level_number=level_number)
+    except LibraryLevel.DoesNotExist:
+        raise Http404("Level Doesn't exist")
+    
+    if request.method == 'POST':
+        form = SectionForm(request.POST)
+        if form.is_valid():
+            section=form.save(commit=False)
+            section.level=level
+            section.save()
+            return redirect('configure_library')
+    else:
+        form = SectionForm()
+    return render(request, 'bookmanager/add_section.html' , {'form':form})
+
+
+
+
 def edit_shelf(request,pk):
     shelf = get_object_or_404(Shelf,pk=pk)
     if request.method == "POST":
@@ -131,3 +152,29 @@ def edit_shelf(request,pk):
     else:
         form = ShelfForm(instance=shelf)
     return render(request,'bookmanager/add_shelf.html',{'form':form})
+
+def edit_section(request,pk):
+    section = get_object_or_404(Section,pk=pk)
+    if request.method == "POST":
+        form = SectionForm (request.POST , instance=section)
+        if form.is_valid():
+            form.save()
+            return redirect('configure_library')
+    else:
+        form = SectionForm(instance=section)
+    return render(request,'bookmanager/add_section.html',{'form':form})
+
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
+from .models import Section
+from django.contrib import messages  # Optional, for sending feedback messages to the template
+
+def delete_section(request, pk):
+    section = get_object_or_404(Section, pk=pk)
+
+    if request.method == 'POST':
+        section.delete()
+        messages.success(request, "Section successfully deleted.")  # Optional feedback message
+        return redirect(reverse('configure_library'))  # Redirect to the library configuration page
+
+    return render(request, 'bookmanager/delete_section_confirm.html', {'section': section})

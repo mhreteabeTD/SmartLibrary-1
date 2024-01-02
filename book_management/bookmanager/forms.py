@@ -1,5 +1,5 @@
 from django import forms
-from .models import Book , LibraryLevel , Shelf
+from .models import *
 
 class BookForm(forms.ModelForm):
     class Meta:
@@ -23,3 +23,8 @@ class ShelfForm(forms.ModelForm):
             'shelf_number',
             'description'
         ]
+
+class SectionForm(forms.ModelForm):
+    class Meta:
+        model = Section
+        fields = ['name','description']

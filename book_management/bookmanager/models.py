@@ -31,3 +31,12 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+
+class Section(models.Model):
+     level = models.ForeignKey(LibraryLevel, related_name = 'sections', on_delete=models.CASCADE)
+     name  = models.CharField(max_length=100)
+     description = models.TextField(blank=True)
+
+     def __str__(self):
+          return f"{self.name} (level {self.level.level_number})"
+ 

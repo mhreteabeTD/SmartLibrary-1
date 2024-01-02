@@ -15,6 +15,8 @@
                 Level {{ level.level_number }} - {{ level.description }}
                 <!-- Button to Add Shelves to the Level -->
                 <a href="{% url 'add_shelf' level.id %}" class="btn btn-sm btn-outline-primary ml-2">Add Shelf</a>
+                <!-- Button to Add Sections to the Level -->
+                <a href="{% url 'add_section' level.id %}" class="btn btn-sm btn-outline-success ml-2">Add Section</a>
             </div>
             <div class="card-body">
                 <h5>Shelves on this Level:</h5>
@@ -24,6 +26,17 @@
                         Shelf {{ shelf.shelf_number }} - {{ shelf.description }}
                         <!-- Link to Edit Shelf -->
                         <a href="{% url 'edit_shelf' shelf.id %}" class="btn btn-sm btn-outline-secondary ml-2">Edit</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <h5 class="mt-3">Sections on this Level:</h5>
+                <ul>
+                    {% for section in level.sections.all %}
+                    <li>
+                        Section {{ section.name }} - {{ section.description }}
+                        <!-- Links to Edit/Delete Section -->
+                        <a href="{% url 'edit_section' section.id %}" class="btn btn-sm btn-outline-secondary ml-2">Edit</a>
+                        <a href="{% url 'delete_section' section.id %}" class="btn btn-sm btn-outline-danger ml-2">Delete</a>
                     </li>
                     {% endfor %}
                 </ul>
