@@ -7,7 +7,7 @@
             <tr>
                 <th>Title</th>
                 <th>Author</th>
-                <th>Location</th>
+                <th>Shelves</th>
                 <th>Rating</th>
                 <th>Actions</th>
             </tr>
@@ -17,7 +17,11 @@
             <tr>
                 <td>{{ book.title }}</td>
                 <td>{{ book.author }}</td>
-                <td>{{ book.location }}</td>
+                <td>
+                    {% for shelf in book.shelves.all %}
+                        Shelf {{ shelf.shelf_number }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
                 <td>{{ book.rating }}</td> 
                 <td>
                     <a href="{% url 'edit_book' book.id %}" class="btn btn-primary btn-sm">Edit</a>

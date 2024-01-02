@@ -11,6 +11,7 @@ urlpatterns=[
     path('edit_library_level/<int:pk>/',views.edit_library_level,name="edit_library_level"),
     path('add_shelf/<int:level_number>',views.add_shelf,name="add_shelf"),
     path('edit_shelf/<int:pk>/',views.edit_shelf,name="edit_shelf"), 
+    path('deleter_shelf/<int:pk>/',views.delete_shelf,name="delete_shelf"), 
     path('stats/',views.stats,name="stats"),
     path('add-section/<int:level_number>/',views.add_section,name='add_section'),
     path('edit-section/<int:pk>/',views.edit_section,name="edit_section"),

@@ -11,7 +11,7 @@ class LibraryLevel(models.Model):
 
 class Shelf(models.Model):
        level = models.ForeignKey(LibraryLevel, on_delete=models.CASCADE, related_name='shelves')
-       shelf_number = models.IntegerField()
+       shelf_number = models.CharField(max_length=100)
        description = models.TextField(blank=True)
 
        class Meta:
@@ -26,11 +26,13 @@ class Shelf(models.Model):
 class Book(models.Model):
     title = models.CharField(max_length=200)
     author = models.CharField(max_length=100)
-    location = models.ForeignKey(Shelf , on_delete=models.CASCADE , related_name="books")
+    shelves = models.ManyToManyField('Shelf' , related_name="books")
     rating=models.FloatField()
 
     def __str__(self):
         return self.title
+
+
 
 class Section(models.Model):
      level = models.ForeignKey(LibraryLevel, related_name = 'sections', on_delete=models.CASCADE)

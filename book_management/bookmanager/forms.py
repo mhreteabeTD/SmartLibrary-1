@@ -2,9 +2,14 @@ from django import forms
 from .models import *
 
 class BookForm(forms.ModelForm):
+    shelves = forms.ModelMultipleChoiceField(
+        queryset=Shelf.objects.all(),
+        widget = forms.CheckboxSelectMultiple,
+        required = False
+    )
     class Meta:
         model=Book
-        fields=["title","author",'location','rating']
+        fields=["title","author",'shelves','rating']
 
 class LibraryLevelForm(forms.ModelForm):
     class Meta:

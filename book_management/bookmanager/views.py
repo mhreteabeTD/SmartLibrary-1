@@ -178,3 +178,13 @@ def delete_section(request, pk):
         return redirect(reverse('configure_library'))  # Redirect to the library configuration page
 
     return render(request, 'bookmanager/delete_section_confirm.html', {'section': section})
+
+def delete_shelf(request, pk):
+    shelf = get_object_or_404(Shelf, pk=pk)
+
+    if request.method == 'POST':
+        shelf.delete()
+        messages.success(request, "Shelf successfully deleted.")  # Optional feedback message
+        return redirect(reverse('configure_library'))  # Redirect to the library configuration page
+
+    return render(request, 'bookmanager/delete_shelf_confirm.html', {'shelf': shelf})

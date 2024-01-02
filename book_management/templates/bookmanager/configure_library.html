@@ -26,6 +26,7 @@
                         Shelf {{ shelf.shelf_number }} - {{ shelf.description }}
                         <!-- Link to Edit Shelf -->
                         <a href="{% url 'edit_shelf' shelf.id %}" class="btn btn-sm btn-outline-secondary ml-2">Edit</a>
+                        <a href="{% url 'delete_shelf' shelf.id %}" class="btn btn-sm btn-outline-danger ml-2">Delete</a>
                     </li>
                     {% endfor %}
                 </ul>
