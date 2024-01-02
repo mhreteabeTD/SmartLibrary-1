@@ -13,12 +13,14 @@ services:
       - postgres
     
   
-  # rfid-scanner:
-  #   build: ./rfid-reader
-  #   volumes:
-  #     - ./rfid-reader:/usr/src/rfid #mount for live code updates
-  #   depends_on:
-  #     - mosquitto
+  rfid-scanner:
+    build: ./rfid-reader
+    volumes:
+      - ./rfid-reader:/usr/src/rfid #mount for live code updates
+    depends_on:
+      - mosquitto
+    networks:
+      - SMART_LIBRARY_NETWORK
 
   # occupancy-sensor:
   #   build: ./occupancy-sensor
@@ -27,21 +29,26 @@ services:
   #   depends_on:
   #     - mosquitto
   
-  # python-app:
-  #   build: ./python-app
-  #   volumes:
-  #     - ./python-app:/usr/src/app #mount for live code updates
-  #   depends_on:
-  #     - mosquitto
+  rasberry-pi:
+    build: ./rasberry-pi
+    volumes:
+      - ./rasberry-pi:/usr/src/app #mount for live code updates
+    depends_on:
+      - mosquitto
+    networks:
+      - SMART_LIBRARY_NETWORK
   
-  # node-red:
-  #   image: nodered/node-red:latest
-  #   volumes:
-  #     - node_red_data:/data #persistent volume for node-red data
-  #   ports:
-  #     - "1880:1880"
-  #   depends_on:
-  #     - mosquitto
+  
+  node-red:
+    image: nodered/node-red:latest
+    volumes:
+      - node_red_data:/data #persistent volume for node-red data
+    ports:
+      - "1880:1880"
+    depends_on:
+      - mosquitto
+    networks:
+      - SMART_LIBRARY_NETWORK
   
   postgres:
     image: postgres:latest
@@ -56,16 +63,28 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "80:80"
+    networks:
+      - SMART_LIBRARY_NETWORK
+    environment:
+      PGADMIN_DEFAULT_EMAIL: smartlibraryteam@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+     
 
 
-  # mosquitto:
-  #   image: eclipse-mosquitto:latest
-  #   ports:
-  #     - "1883:1883"
-  #   volumes:
-  #     - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
-  #     - mosquitto_data:/mosquitto/data
-  #     - mosquitto_log:/mosquitto/log
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    networks:
+      - SMART_LIBRARY_NETWORK
 
 volumes:
   mosquitto_data:
