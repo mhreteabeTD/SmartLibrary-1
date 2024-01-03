@@ -18,7 +18,9 @@ from django.contrib import admin
 from django.urls import path,include
 
 urlpatterns = [
+    path('',include('authentication.urls')),
     path('',include('bookmanager.urls')),
     path('admin/', admin.site.urls),
     path('books/',include('bookmanager.urls')),
+    path('bookfinder/',include('bookfinder.urls'))
     ]
