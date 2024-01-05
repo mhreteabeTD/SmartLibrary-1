@@ -34,8 +34,8 @@ class SimulatedRFIDReader(RFIDReaderInterface):
         self.shelf_choices=list(self.connection.query("SELECT s.id FROM public.bookmanager_shelf as s"))
 
         #some variables which would be useful for the simulation
-        self.PROBABLITY_OF_BOOK_REMOVAL=0.1
-        self.PROBABLITY_OF_BOOK_RETURN=0.05
+        self.PROBABLITY_OF_BOOK_REMOVAL=0.5
+        self.PROBABLITY_OF_BOOK_RETURN=0.5
 
 
     def on_add_to_shelf(self,data):
@@ -75,7 +75,8 @@ class SimulatedRFIDReader(RFIDReaderInterface):
         #in here we are gone check books which are onthe shelve and remove some of them
         for row in result:
             shelf_id, shelf_number, shelf_description, book_id, book_title, book_author, book_rating = row
-
+            print(f'book {book_title} on shelf {shelf_number}',flush=True)
+            print(type(book_title),flush=True)
             x=random.random()
             data={
                 "shelf_id":shelf_id,
@@ -84,10 +85,10 @@ class SimulatedRFIDReader(RFIDReaderInterface):
                 "book_title":book_title
             }
             #let's check that this books isn't already removed
-            if book_id in self.off_shelve_books:
+            if book_id in self.off_shelve_books or book_id==None:
                 continue
 
-            if x <= self.PROBABLITY_OF_BOOK_REMOVAL:
+            if  x <= self.PROBABLITY_OF_BOOK_REMOVAL:
                 self.on_remove_from_shelf(data)
                 self.off_shelve_books.append(book_id)
         
@@ -95,7 +96,6 @@ class SimulatedRFIDReader(RFIDReaderInterface):
         for book_id in self.off_shelve_books:
             x = random.random()
             if x <= self.PROBABLITY_OF_BOOK_RETURN:
-                self.off_shelve_books.remove(book_id)
                 shelf_id=random.choice(self.shelf_choices)[0]
                 data={
                     'book_id':book_id,
@@ -104,8 +104,10 @@ class SimulatedRFIDReader(RFIDReaderInterface):
                 command="""SELECT FROM public.bookmanager_book_shelves where  book_id = %s AND shelf_id=%s"""
                 result=self.connection.cursor.execute(command,
                               (book_id, shelf_id))
-                if result:
+                if not result:
                     self.on_add_to_shelf(data)
+                    self.off_shelve_books.remove(book_id)
+                
 
                 
 
