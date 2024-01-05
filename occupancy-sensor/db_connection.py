@@ -7,20 +7,20 @@ db_password="admin"
 db_host="postgres"
 
 #connect to the database
-conn=psycopg2.connect(
-    dbname=db_name,
-    user=db_user,
-    password=db_password,
-    host=db_host
-)
+class DBConnection:
+    def __init__(self):
+        self.conn=psycopg2.connect(
+            dbname=db_name,
+            user=db_user,
+            password=db_password,
+            host=db_host
+        )
 
-#create a cursor object
-cursor = conn.cursor()
+        #create a cursor object
+        self.cursor = self.conn.cursor()
 
-#example query
-cursor.execute("SELECT version();")
-record=cursor.fetchone()
-print(f"you are connected to {record}")
+    def query(self,cmd):
 
-cursor.close()
-conn.close()
+        self.cursor.execute(cmd)
+        return self.cursor.fetchall()
+        

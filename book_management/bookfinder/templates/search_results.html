@@ -7,23 +7,24 @@
 
     <h2 class="mt-4">Search Results</h2>
     {% if books %}
-    <ul class="list-group">
-        {% for book in books %}
-            <li class="list-group-item">
-                {{ book.title }} by {{ book.author }} (Rating: {{ book.rating }})
-                <strong>Located at:</strong>
-                <ul class="list-group list-group-flush">
-                    {% for shelf in book.shelves.all %}
-                        <li class="list-group-item">
-                            Shelf {{ shelf.shelf_number }} on Level {{ shelf.level.level_number }}
-                            {% if shelf.description %} - {{ shelf.description }}{% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No books found.</p>
-{% endif %}
+        <ul class="list-group">
+            {% for book in books %}
+                <li class="list-group-item" style="background-color: #f8f9fa; margin-bottom: 10px; padding: 20px; border: 1px solid #e3e3e3; border-radius: 5px;">
+                    <h5>{{ book.title }} by {{ book.author }}</h5>
+                    <p>Rating: {{ book.rating }}</p>
+                    <strong>Located at:</strong>
+                    <ul class="list-group list-group-flush">
+                        {% for shelf in book.shelves.all %}
+                            <li class="list-group-item" style="background-color: #fff; border-left: 5px solid #007bff; margin-bottom: 5px;">
+                                Shelf {{ shelf.shelf_number }} on Level {{ shelf.level.level_number }}
+                                {% if shelf.description %} - {{ shelf.description }}{% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No books found.</p>
+    {% endif %}
 {% endblock %}

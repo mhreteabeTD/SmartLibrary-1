@@ -26,6 +26,10 @@ class ShelfForm(forms.ModelForm):
         fields = [
             'level',
             'shelf_number',
+            'x_coordinate',
+            'y_coordinate',
+            'z_coordinate',
+            'location_description',
             'description'
         ]
 

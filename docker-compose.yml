@@ -22,12 +22,15 @@ services:
     networks:
       - SMART_LIBRARY_NETWORK
 
-  # occupancy-sensor:
-  #   build: ./occupancy-sensor
-  #   volumes:
-  #     - ./occupancy-sensor:/usr/src/occupancy #mount for live code updates
-  #   depends_on:
-  #     - mosquitto
+  occupancy-sensor:
+    build: ./occupancy-sensor
+    volumes:
+      - ./occupancy-sensor:/usr/src/occupancy #mount for live code updates
+    depends_on:
+      - mosquitto
+    networks:
+      - SMART_LIBRARY_NETWORK
+
   
   rasberry-pi:
     build: ./rasberry-pi
@@ -72,6 +75,8 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: smartlibraryteam@example.com
       PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
      
 
 
@@ -91,5 +96,6 @@ volumes:
   mosquitto_log:
   node_red_data:
   postgres_data:
+  pgadmin-data:
 networks:
   SMART_LIBRARY_NETWORK:

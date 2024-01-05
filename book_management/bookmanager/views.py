@@ -119,7 +119,7 @@ def add_shelf(request,level_number):
             return redirect('configure_library')
     else:
         form = ShelfForm()
-    return render(request, 'bookmanager/add_shelve.html' , {'form':form})
+    return render(request, 'bookmanager/add_shelf.html' , {'form':form})
 
 
 def add_section(request, level_number):
@@ -151,7 +151,7 @@ def edit_shelf(request,pk):
             return redirect('configure_library')
     else:
         form = ShelfForm(instance=shelf)
-    return render(request,'bookmanager/add_shelf.html',{'form':form})
+    return render(request,'bookmanager/edit_shelf.html',{'form':form})
 
 def edit_section(request,pk):
     section = get_object_or_404(Section,pk=pk)
