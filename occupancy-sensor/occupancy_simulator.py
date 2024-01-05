@@ -49,20 +49,23 @@ class SimulatedOccupancySensor(OccupancySensor):
         #then we can get generate a synthetic data based on that grid
         rows=7
         cols=7
-        syntethic_data={}
+        syntethic_data={"levels":[]}
         for level in levels:
             level_number = level[0]
-            syntethic_data[level_number] = [[0 for i in range(rows)] for j in range(cols)] 
+            current_level_data={}
+            syntethic_data['levels'].append(current_level_data)
+            current_level_data['levelId'] = level_number
+            current_level_data['gridData'] = [[0 for i in range(10)] for j in range(10)]
             for i in range(rows):
                 for j in range(cols):
-                    syntethic_data[level_number][i][j] = round(random.uniform(0,9))
+                    current_level_data['gridData'][i][j] = round(random.uniform(0,9))
         print(syntethic_data)
         return syntethic_data
     
     def publish_data(self,data):
         try:
             json_data = json.dumps(data)
-            self.client.publish(topic=self.topic,payload=data)
+            self.client.publish(topic=self.topic,payload=json_data)
             print('succesfuly published')
         except Exception as e:
             print(e,flush=True)
