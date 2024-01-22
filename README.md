@@ -53,7 +53,7 @@ Here's a visual overview of the dashboard for library users:
 
 2. ![Smart Library Project Structure](seat_occupancy_form.png)
 
-3. ![Smart Library Project Structure](admin_dashboard.png)
+3. ![Smart Library Project Structure](book_finder_new.png)
 
 
 ### Dashboard for admin
