@@ -1,0 +1,970 @@
+[
+    {
+        "id": "f6f2187d.f17ca8",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "3cc11d24.ff01a2",
+        "type": "comment",
+        "z": "f6f2187d.f17ca8",
+        "name": "WARNING: please check you have started this container with a volume that is mounted to /data\\n otherwise any flow changes are lost when you redeploy or upgrade the container\\n (e.g. upgrade to a more recent node-red docker image).\\n  If you are using named volumes you can ignore this warning.\\n Double click or see info side panel to learn how to start Node-RED in Docker to save your work",
+        "info": "\nTo start docker with a bind mount volume (-v option), for example:\n\n```\ndocker run -it -p 1880:1880 -v /home/user/node_red_data:/data --name mynodered nodered/node-red\n```\n\nwhere `/home/user/node_red_data` is a directory on your host machine where you want to store your flows.\n\nIf you do not do this then you can experiment and redploy flows, but if you restart or upgrade the container the flows will be disconnected and lost. \n\nThey will still exist in a hidden data volume, which can be recovered using standard docker techniques, but that is much more complex than just starting with a named volume as described above.",
+        "x": 350,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "eca35a7a5d2dbdf4",
+        "type": "mqtt in",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "topic": "occupancy/data",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "ccb735a321861bf0",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 80,
+        "y": 580,
+        "wires": [
+            [
+                "33bb02e01d9da606",
+                "3c106c00bd1f8a48",
+                "bba7d9c73ba145de"
+            ]
+        ]
+    },
+    {
+        "id": "5348c98bdc17bd9e",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "debug 11",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 660,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "33bb02e01d9da606",
+        "type": "json",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 330,
+        "y": 580,
+        "wires": [
+            [
+                "5348c98bdc17bd9e"
+            ]
+        ]
+    },
+    {
+        "id": "3c106c00bd1f8a48",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "function 5",
+        "func": "// Given data\nvar inputJson = msg.payload\n// Parse the JSON string\n//var jsonData = JSON.parse(inputJson);\n\n// Initialize the output array for the table\nvar tableData = [];\n\n// Iterate over each level in the given data\ninputJson.levels.forEach(function(level) {\n    // Get the levelId\n    var levelId = level.levelId;\n\n    // Iterate over each row in the gridData\n    level.gridData.forEach(function(row, rowIndex) {\n        // Iterate over each column in the row\n        row.forEach(function(number, columnIndex) {\n            // Create an object representing a row in the table\n            var rowData = {\n                levelId: levelId,\n                gridId: rowIndex + 1, // Assuming gridId starts from 1\n                area: columnIndex + 1,\n                occupancy: number\n            };\n\n            // Add the row object to the tableData array\n            tableData.push(rowData);\n        });\n    });\n});\n\n\nmsg.payload = tableData\nmsg.topic = \"occupancyData\"\n// The resulting tableData can now be used as the input to the ui_table node\n//msg.ui_control.customHeight = 10\nreturn msg\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 500,
+        "wires": [
+            [
+                "28165f77506ed0fd",
+                "e8dcb451b6e6c03c"
+            ]
+        ]
+    },
+    {
+        "id": "28165f77506ed0fd",
+        "type": "ui_table",
+        "z": "f6f2187d.f17ca8",
+        "group": "43742323721202ad",
+        "name": "Occupancy",
+        "order": 1,
+        "width": 15,
+        "height": 5,
+        "columns": [],
+        "outputs": 1,
+        "cts": true,
+        "x": 590,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "837a2339ba8c9a8c",
+        "type": "mqtt in",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "topic": "rfid/added",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "e3d50ca839aea857",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 1040,
+        "y": 740,
+        "wires": [
+            [
+                "5b6da11c6aaf522f",
+                "38ba88155c787b49"
+            ]
+        ]
+    },
+    {
+        "id": "5b6da11c6aaf522f",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "debug 12",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1300,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "38ba88155c787b49",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "function 6",
+        "func": "// Function node code\n//var dynamicData = msg.payload;\n//msg.payload = [dynamicData];\n//return msg;\n\n// Initialize lists for topics rfid/added and rfid/removed\n//context.set('rfidAddedList', []);\n//context.set('rfidRemovedList', []);\n\n// Function node code\nvar msgPayload = msg.payload;\nvar msgTopic = msg.topic;\n\n// Check the topic and add message to the corresponding list\nif (msgTopic === \"rfid/added\") {\n    var rfidAddedList = context.get('rfidAddedList');\n    rfidAddedList.push(msgPayload);\n    context.set('rfidAddedList', rfidAddedList);\n    console.log('Added to rfidAddedList:', msgPayload);\n} else if (msgTopic === \"rfid/removed\") {\n    var rfidRemovedList = context.get('rfidRemovedList');\n    rfidRemovedList.push(msgPayload);\n    context.set('rfidRemovedList', rfidRemovedList);\n    console.log('Added to rfidRemovedList:', msgPayload);\n}\n\n// Remove data from rfid/added if book id is present in rfid/removed\nvar rfidAddedList = context.get('rfidAddedList');\nvar rfidRemovedList = context.get('rfidRemovedList');\n\n rfidRemovedList.forEach(function (removedItem) {\n     rfidAddedList = rfidAddedList.filter(function (addedItem) {\n         return addedItem.book_id !== removedItem.book_id;\n     });\n    \n });\n\n rfidRemovedList = [];\n\n// rfidRemovedList.forEach(function (removedItem) {\n//     rfidAddedList.forEach (function (addedItem) {\n//         if(removedItem.book_id==addedItem.book_id)\n//         rfidAddedList.\n\n//     });\n// });\n\ncontext.set('rfidAddedList', rfidAddedList);\ncontext.set('rfidRemovedList', rfidRemovedList);\n\n\n// Set the filtered list as the payload of the returned message\nmsg.payload = rfidAddedList;\n\nreturn msg;\n\n\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n\n\n// Initialize lists for topics rfid/added and rfid/removed\ncontext.set('rfidAddedList', []);\ncontext.set('rfidRemovedList', []);",
+        "finalize": "",
+        "libs": [],
+        "x": 1280,
+        "y": 640,
+        "wires": [
+            [
+                "38d0b58ab84cae5a",
+                "b6ed7e50acf18b61"
+            ]
+        ]
+    },
+    {
+        "id": "38d0b58ab84cae5a",
+        "type": "ui_table",
+        "z": "f6f2187d.f17ca8",
+        "group": "3b6bfc22a1cc3be3",
+        "name": "Books",
+        "order": 1,
+        "width": 10,
+        "height": 5,
+        "columns": [],
+        "outputs": 1,
+        "cts": true,
+        "x": 1510,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f55f57ca485100fb",
+        "type": "mqtt in",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "topic": "rfid/removed",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "e3d50ca839aea857",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 950,
+        "y": 640,
+        "wires": [
+            [
+                "614a56394c0c6b2f",
+                "38ba88155c787b49"
+            ]
+        ]
+    },
+    {
+        "id": "614a56394c0c6b2f",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "debug 13",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1120,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "f926f4aacca975be",
+        "type": "ui_template",
+        "z": "f6f2187d.f17ca8",
+        "group": "43742323721202ad",
+        "name": "",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "format": "<style>\n    .template {\n    position: fixed;\n    bottom: 10px; /* Adjusted value for bottom */\n    left: 10px;\n    }\n    \n    /* CSS for .template2 */\n    .template2 {\n    position: fixed;\n    bottom: 10px; /* Adjusted value for bottom */\n    right: 10px; /* Adjusted value for right */\n    }\n\n    /* CSS for .template2 */\n    .template3 {\n\n    position: fixed;\n    right:0px\n\n    }\n    .template4 {\n\n    position: fixed;\n    left:10px\n\n    }\n    /* CSS for .template2 */\n    .template4 {\n    color: black;\n\n    }\n</style>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 340,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "746e9658ad1a525e",
+        "type": "ui_heat_map",
+        "z": "f6f2187d.f17ca8",
+        "group": "4bb69fb6bf4d5b20",
+        "order": 1,
+        "width": 8,
+        "height": 5,
+        "name": "",
+        "rows": 0,
+        "columns": 0,
+        "minMax": false,
+        "minimumValue": 0,
+        "maximumValue": 0,
+        "backgroundType": "color",
+        "backgroundColor": "#ffffff",
+        "image": "never",
+        "radius": 40,
+        "opacity": 0.6,
+        "blur": 0.85,
+        "showValues": false,
+        "gridType": "vals",
+        "valuesDecimals": 0,
+        "showLegend": false,
+        "legendType": "vals",
+        "legendDecimals": 0,
+        "legendCount": 2,
+        "x": 540,
+        "y": 660,
+        "wires": [
+            [
+                "28ad34c4139abc52"
+            ]
+        ]
+    },
+    {
+        "id": "bba7d9c73ba145de",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "function 7",
+        "func": "// Check if 'levels' exists and is an array within 'msg.payload'\nif (!msg.payload || !Array.isArray(msg.payload.levels)) {\n    node.error(\"Payload is not an object or 'levels' is not an array\");\n    return null; // Stop the flow because the data structure is not as expected\n}\n\n// Select the level whose data you want to display (0 for the first level)\nconst levelIndex = 0;\n\n// Check if the selected level exists\nif (!msg.payload.levels[levelIndex]) {\n    node.error(\"Specified level index does not exist in the 'levels' array\");\n    return null; // Stop the flow because the selected level is not present\n}\n\n// Retrieve the grid data for the chosen level\nconst gridData = msg.payload.levels[levelIndex].gridData;\n\n// Flatten the 2D array to a 1D array\nconst flattenedData = gridData.reduce((acc, val) => acc.concat(val), []);\n\n// Since the heatmap node expects an array with a length equal to rows x columns,\n// and considering that the trailing zeroes should not be part of the heatmap,\n// we'll slice the array to contain only the first 7 values of each sub-array (non-zero values).\nconst expectedLength = 10 * 7; // 10 rows and 7 columns with non-zero values\nconst trimmedFlattenedData = flattenedData.slice(0, expectedLength);\n\n// Set the trimmed array as the new payload\nmsg.payload = trimmedFlattenedData;\n\n// Set the rows and columns dynamically (if the heatmap supports it)\n// If not, you must manually configure the heatmap node to have 10 rows and 7 columns.\nmsg.rows = 10;\nmsg.columns = 7;\n\n// Return the message to be passed to the heatmap node\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 660,
+        "wires": [
+            [
+                "746e9658ad1a525e"
+            ]
+        ]
+    },
+    {
+        "id": "28ad34c4139abc52",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "debug 16",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 720,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "598cb7b306cd9f45",
+        "type": "ui_form",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "label": "",
+        "group": "5c7b4f41206c356b",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "options": [
+            {
+                "label": "Enter the required level ID (1-5)",
+                "value": "levelId",
+                "type": "number",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Enter the grid value (1-10)",
+                "value": "gridId",
+                "type": "number",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Enter the area (1-10)",
+                "value": "area",
+                "type": "number",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "levelId": "",
+            "gridId": "",
+            "area": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "occupancyForm",
+        "topicType": "str",
+        "splitLayout": false,
+        "className": "",
+        "x": 70,
+        "y": 260,
+        "wires": [
+            [
+                "5fdb2d5ece0dc733"
+            ]
+        ]
+    },
+    {
+        "id": "cbd7703cfdf3d4a4",
+        "type": "ui_form",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "label": "",
+        "group": "ba20ceea1c06be36",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "options": [
+            {
+                "label": "Enter Book ID",
+                "value": "Id",
+                "type": "number",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "Id": ""
+        },
+        "payload": "",
+        "submit": "search",
+        "cancel": "cancel",
+        "topic": "bookForm",
+        "topicType": "str",
+        "splitLayout": false,
+        "className": "",
+        "x": 1190,
+        "y": 420,
+        "wires": [
+            [
+                "b6ed7e50acf18b61"
+            ]
+        ]
+    },
+    {
+        "id": "e8dcb451b6e6c03c",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "function 8",
+        "func": "var levelId = context.get('levelId');\nvar gridId = context.get('gridId');\nvar area = context.get('area');\nvar result = context.get('result');\n\nif (msg.topic == \"occupancyForm\") {\n  \n    context.set('levelId', msg.payload.levelId);\n    context.set('gridId', msg.payload.gridId);\n    context.set('area', msg.payload.area);\n\n}\n// Check if the actual table data is present in the message payload\nif ( msg.topic != \"occupancyForm\" && levelId) {\n    var tableData = msg.payload;\n\n    // Find the matching row in the table\n    var matchingRow = tableData.find(function (row) {\n\n        return row.levelId === levelId && row.gridId === gridId && row.area === area;\n    });\n\n    context.set('result', matchingRow.occupancy);\n\n    // Pass the resultTable to the output\n    msg.payload = context.get(\"result\");\n\n    return msg;\n} \n\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\ncontext.set('levelId', null);\ncontext.set('gridId', null);\ncontext.set('area', null);\n\ncontext.set(\"result\", null);\n",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 260,
+        "wires": [
+            [
+                "082e4b04a00c7ed5"
+            ]
+        ]
+    },
+    {
+        "id": "5fdb2d5ece0dc733",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "function 9",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 280,
+        "y": 260,
+        "wires": [
+            [
+                "e8dcb451b6e6c03c"
+            ]
+        ]
+    },
+    {
+        "id": "b6ed7e50acf18b61",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "function 10",
+        "func": "var bookId = context.get('bookId');\n\n\nif (msg.topic == \"bookForm\") {\n    \n    context.set('bookId', msg.payload.Id);\n\n\n}\n\n// Check if the actual table data is present in the message payload\nif ( msg.topic != \"bookForm\" && bookId) {\n    var bookData = msg.payload;\n\n    // Find the matching row in the table\n    var matchingRow = bookData.find(function (row) {\n\n        return row.book_id === bookId \n    });\n\n    // Pass the resultTable to the output\n    if(matchingRow) {\n         msg.payload = matchingRow.shelf_id;\n\n    return msg;\n    }\n\n} \n\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n\n\n// Initialize lists for topics rfid/added and rfid/removed\ncontext.set('bookId', null);\n\n",
+        "finalize": "",
+        "libs": [],
+        "x": 1490,
+        "y": 420,
+        "wires": [
+            [
+                "614210bc4775cea7"
+            ]
+        ]
+    },
+    {
+        "id": "082e4b04a00c7ed5",
+        "type": "ui_text",
+        "z": "f6f2187d.f17ca8",
+        "group": "5c7b4f41206c356b",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Number of occupant seats:",
+        "format": "{{msg.payload}}",
+        "layout": "row-center",
+        "className": "",
+        "style": true,
+        "font": "Arial Black,Arial Black,Gadget,sans-serif",
+        "fontSize": "20",
+        "color": "#1b1818",
+        "x": 720,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "614210bc4775cea7",
+        "type": "ui_text",
+        "z": "f6f2187d.f17ca8",
+        "group": "ba20ceea1c06be36",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Shelf ID:",
+        "format": "{{msg.payload}}",
+        "layout": "row-center",
+        "className": "",
+        "style": true,
+        "font": "Arial Black,Arial Black,Gadget,sans-serif",
+        "fontSize": "20",
+        "color": "#1b1818",
+        "x": 1680,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "e240159f25e87e44",
+        "type": "ui_text",
+        "z": "f6f2187d.f17ca8",
+        "group": "a1f417dc8796d4a6",
+        "order": 5,
+        "width": 10,
+        "height": 2,
+        "name": "",
+        "label": "",
+        "format": "Welcome to the smart library! ",
+        "layout": "col-center",
+        "className": "",
+        "style": true,
+        "font": "Georgia,Georgia,serif",
+        "fontSize": "25",
+        "color": "#674804",
+        "x": 70,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "7ce4997c7ee0d3d9",
+        "type": "ui_media",
+        "z": "f6f2187d.f17ca8",
+        "group": "a1f417dc8796d4a6",
+        "name": "",
+        "width": 10,
+        "height": 11,
+        "order": 1,
+        "category": "name",
+        "file": "pexels-photo-3494806.jpeg",
+        "layout": "adjust",
+        "showcontrols": true,
+        "loop": true,
+        "onstart": false,
+        "scope": "local",
+        "tooltip": "",
+        "x": 490,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9660ba11ffecb3a5",
+        "type": "ui_text",
+        "z": "f6f2187d.f17ca8",
+        "group": "a1f417dc8796d4a6",
+        "order": 10,
+        "width": 10,
+        "height": 5,
+        "name": "",
+        "label": "",
+        "format": "We have 5 floors in our libary which are labelled as levels. Each of the levels consists of various genres of books and comfortable seating area. The levels or floors are further divided into 10 grids and each grid is further divided into 10 areas. This is done to increase the comfort of users to find the perfect seating area and the desired book. This dashboad also displays the occupant seats and available books in the real time info section. We also have forms to search of occupancies or the required book. Happy learning!",
+        "layout": "col-center",
+        "className": "",
+        "style": true,
+        "font": "Georgia,Georgia,serif",
+        "fontSize": "18",
+        "color": "#683103",
+        "x": 190,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "0036c63594cdecc6",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "abdd0722.1d2cc8",
+        "order": 2,
+        "width": 4,
+        "height": 1
+    },
+    {
+        "id": "687d6df1abf84102",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "abdd0722.1d2cc8",
+        "order": 3,
+        "width": 4,
+        "height": 1
+    },
+    {
+        "id": "0840e178a84fe1b1",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "abdd0722.1d2cc8",
+        "order": 4,
+        "width": 4,
+        "height": 1
+    },
+    {
+        "id": "9782e336f5884578",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "abdd0722.1d2cc8",
+        "order": 5,
+        "width": 4,
+        "height": 1
+    },
+    {
+        "id": "2b18af83a120f9aa",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "abdd0722.1d2cc8",
+        "order": 6,
+        "width": 4,
+        "height": 1
+    },
+    {
+        "id": "241ba5108aca675b",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 2,
+        "width": 14,
+        "height": 1
+    },
+    {
+        "id": "a18ac2973eac67fe",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 3,
+        "width": 14,
+        "height": 1
+    },
+    {
+        "id": "02e4d3d61951c266",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 4,
+        "width": 2,
+        "height": 1
+    },
+    {
+        "id": "bf0b02159ca03a07",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 6,
+        "width": 2,
+        "height": 1
+    },
+    {
+        "id": "84eccab330250eeb",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 7,
+        "width": 2,
+        "height": 1
+    },
+    {
+        "id": "ba2dc48e36814a3b",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 8,
+        "width": 2,
+        "height": 1
+    },
+    {
+        "id": "63611312a13527e5",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 9,
+        "width": 2,
+        "height": 1
+    },
+    {
+        "id": "5856028b53cb9ee4",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 11,
+        "width": 2,
+        "height": 1
+    },
+    {
+        "id": "43f719cdcbb34945",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 12,
+        "width": 2,
+        "height": 1
+    },
+    {
+        "id": "345bea94a5bdfd43",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 13,
+        "width": 2,
+        "height": 1
+    },
+    {
+        "id": "77b6aa4a601c9c36",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 14,
+        "width": 2,
+        "height": 1
+    },
+    {
+        "id": "18dd0da1f8f7e83c",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 15,
+        "width": 2,
+        "height": 1
+    },
+    {
+        "id": "f2671e14b707d2da",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 16,
+        "width": 2,
+        "height": 1
+    },
+    {
+        "id": "86a1e78cc38b3e43",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 17,
+        "width": 2,
+        "height": 1
+    },
+    {
+        "id": "d42c511d61347eaf",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 18,
+        "width": 2,
+        "height": 1
+    },
+    {
+        "id": "ce4fd891ccd8e6da",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 19,
+        "width": 2,
+        "height": 1
+    },
+    {
+        "id": "0518daf4b4ec0e1e",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 20,
+        "width": 14,
+        "height": 1
+    },
+    {
+        "id": "2957c4b17310c92f",
+        "type": "ui_spacer",
+        "z": "f6f2187d.f17ca8",
+        "name": "spacer",
+        "group": "a1f417dc8796d4a6",
+        "order": 21,
+        "width": 14,
+        "height": 1
+    },
+    {
+        "id": "ccb735a321861bf0",
+        "type": "mqtt-broker",
+        "name": "mosquitto",
+        "broker": "mosquitto",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "43742323721202ad",
+        "type": "ui_group",
+        "name": "Occupancy",
+        "tab": "2061408c1bfd4d4d",
+        "order": 1,
+        "disp": true,
+        "width": "15",
+        "collapse": false,
+        "className": "template"
+    },
+    {
+        "id": "e3d50ca839aea857",
+        "type": "mqtt-broker",
+        "name": "apple",
+        "broker": "mosquitto",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "3b6bfc22a1cc3be3",
+        "type": "ui_group",
+        "name": "Books",
+        "tab": "2061408c1bfd4d4d",
+        "order": 2,
+        "disp": true,
+        "width": "10",
+        "collapse": false,
+        "className": "template2"
+    },
+    {
+        "id": "4bb69fb6bf4d5b20",
+        "type": "ui_group",
+        "name": "Heatmap displaying the occupancy",
+        "tab": "2061408c1bfd4d4d",
+        "order": 3,
+        "disp": false,
+        "width": "8",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "5c7b4f41206c356b",
+        "type": "ui_group",
+        "name": "Occupancies available based on the level, grid and area! Please enter the appropriate values based on your requirement.",
+        "tab": "ef8694fa4a81531d",
+        "order": 1,
+        "disp": true,
+        "width": "24",
+        "collapse": false,
+        "className": "template4"
+    },
+    {
+        "id": "ba20ceea1c06be36",
+        "type": "ui_group",
+        "name": "Book finder! Please enter the required book ID",
+        "tab": "cd91991b435d3d52",
+        "order": 1,
+        "disp": true,
+        "width": "24",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "a1f417dc8796d4a6",
+        "type": "ui_group",
+        "name": "Welcome",
+        "tab": "216080ef.31a7f",
+        "order": 1,
+        "disp": false,
+        "width": "24",
+        "collapse": false,
+        "className": "template4"
+    },
+    {
+        "id": "2061408c1bfd4d4d",
+        "type": "ui_tab",
+        "name": "Real time info",
+        "icon": "dashboard",
+        "order": 4,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "ef8694fa4a81531d",
+        "type": "ui_tab",
+        "name": "Occupancy",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "cd91991b435d3d52",
+        "type": "ui_tab",
+        "name": "Query Books",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "216080ef.31a7f",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]
