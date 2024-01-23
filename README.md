@@ -35,7 +35,17 @@ These instructions will get you a copy of the project up and running on your loc
 ### To run the project 
 1. Navigate to the project directory
 2. $ docker-compose up --build -d
-3. after that you can goto the containers each and access them
+3. To run the Book-Management module:
+4.  cd book_management
+5.  python manage.py migrate
+6. To access the functionalites of Book Management
+7.  python manage.py createsuperuser # don't forget to save your credentials you will need it later  
+8.  go to your web browser localhost:8000/admin
+9.  create a normal user # the username and password should be noted
+10. naviagae to localhost:8000
+11. if you input the superuser credentials then you will be taken to a book management pages which allows editing books and library structure
+12. if you input the normaluser credentials then you will be redirected to a page where you can search and find the location of you favorite books
+13.  after that you can goto the containers each and access them
 
 ### Project Structure
 
