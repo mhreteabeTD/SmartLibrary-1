@@ -23,6 +23,7 @@ def handle_book_added(payload):
         print(f"successfuly added {payload['book_id']} to {payload['shelf_id']}",flush=True)
     except Exception as e:
         print(f'failure in handle_book_added: {e}',flush=True)
+        connection.conn.reset()
     
 
 def handle_book_removed(payload):
@@ -34,6 +35,7 @@ def handle_book_removed(payload):
         print(f"successfuly removed {payload['book_id']} from {payload['shelf_id']}",flush=True)
     except Exception as e:
         print(f'failure in handle_book_removed: {e}',flush=True)
+        connection.conn.reset()
     
 
 

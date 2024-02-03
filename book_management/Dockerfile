@@ -15,5 +15,15 @@ EXPOSE 8000
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONBUFFERED 1
 
+# Copy entrypoint script
+COPY entrypoint.sh /usr/src/app/entrypoint.sh
+
+# Make entrypoint script executable
+RUN chmod +x /usr/src/app/entrypoint.sh
+
+# Set the entrypoint
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+
+
 #when container launches
 CMD [ "python","manage.py","runserver","0.0.0.0:8000" ]

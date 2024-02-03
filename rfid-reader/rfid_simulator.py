@@ -34,8 +34,8 @@ class SimulatedRFIDReader(RFIDReaderInterface):
         self.shelf_choices=list(self.connection.query("SELECT s.id FROM public.bookmanager_shelf as s"))
 
         #some variables which would be useful for the simulation
-        self.PROBABLITY_OF_BOOK_REMOVAL=0.5
-        self.PROBABLITY_OF_BOOK_RETURN=0.5
+        self.PROBABLITY_OF_BOOK_REMOVAL=0.3
+        self.PROBABLITY_OF_BOOK_RETURN=0.7
 
 
     def on_add_to_shelf(self,data):

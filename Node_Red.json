@@ -1,15 +1,15 @@
 [
     {
-        "id": "f6f2187d.f17ca8",
+        "id": "0e61c096bdee35e2",
         "type": "tab",
         "label": "Flow 1",
         "disabled": false,
         "info": ""
     },
     {
-        "id": "3cc11d24.ff01a2",
+        "id": "77adda8a677c8775",
         "type": "comment",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "WARNING: please check you have started this container with a volume that is mounted to /data\\n otherwise any flow changes are lost when you redeploy or upgrade the container\\n (e.g. upgrade to a more recent node-red docker image).\\n  If you are using named volumes you can ignore this warning.\\n Double click or see info side panel to learn how to start Node-RED in Docker to save your work",
         "info": "\nTo start docker with a bind mount volume (-v option), for example:\n\n```\ndocker run -it -p 1880:1880 -v /home/user/node_red_data:/data --name mynodered nodered/node-red\n```\n\nwhere `/home/user/node_red_data` is a directory on your host machine where you want to store your flows.\n\nIf you do not do this then you can experiment and redploy flows, but if you restart or upgrade the container the flows will be disconnected and lost. \n\nThey will still exist in a hidden data volume, which can be recovered using standard docker techniques, but that is much more complex than just starting with a named volume as described above.",
         "x": 350,
@@ -17,9 +17,9 @@
         "wires": []
     },
     {
-        "id": "eca35a7a5d2dbdf4",
+        "id": "ea27e708cbcea748",
         "type": "mqtt in",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "",
         "topic": "occupancy/data",
         "qos": "2",
@@ -33,16 +33,17 @@
         "y": 580,
         "wires": [
             [
-                "33bb02e01d9da606",
-                "3c106c00bd1f8a48",
-                "bba7d9c73ba145de"
+                "d5c2c68b58c82021",
+                "9da3b8c4c192807c",
+                "9154003cf353de0f",
+                "712ff4e53442665e"
             ]
         ]
     },
     {
-        "id": "5348c98bdc17bd9e",
+        "id": "5d0608625831d7f6",
         "type": "debug",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "debug 11",
         "active": true,
         "tosidebar": true,
@@ -56,9 +57,9 @@
         "wires": []
     },
     {
-        "id": "33bb02e01d9da606",
+        "id": "d5c2c68b58c82021",
         "type": "json",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "",
         "property": "payload",
         "action": "",
@@ -67,16 +68,16 @@
         "y": 580,
         "wires": [
             [
-                "5348c98bdc17bd9e"
+                "5d0608625831d7f6"
             ]
         ]
     },
     {
-        "id": "3c106c00bd1f8a48",
+        "id": "9da3b8c4c192807c",
         "type": "function",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "function 5",
-        "func": "// Given data\nvar inputJson = msg.payload\n// Parse the JSON string\n//var jsonData = JSON.parse(inputJson);\n\n// Initialize the output array for the table\nvar tableData = [];\n\n// Iterate over each level in the given data\ninputJson.levels.forEach(function(level) {\n    // Get the levelId\n    var levelId = level.levelId;\n\n    // Iterate over each row in the gridData\n    level.gridData.forEach(function(row, rowIndex) {\n        // Iterate over each column in the row\n        row.forEach(function(number, columnIndex) {\n            // Create an object representing a row in the table\n            var rowData = {\n                levelId: levelId,\n                gridId: rowIndex + 1, // Assuming gridId starts from 1\n                area: columnIndex + 1,\n                occupancy: number\n            };\n\n            // Add the row object to the tableData array\n            tableData.push(rowData);\n        });\n    });\n});\n\n\nmsg.payload = tableData\nmsg.topic = \"occupancyData\"\n// The resulting tableData can now be used as the input to the ui_table node\n//msg.ui_control.customHeight = 10\nreturn msg\n",
+        "func": "// Given data\nvar inputJson = msg.payload\n// Parse the JSON string\n//var jsonData = JSON.parse(inputJson);\n\n// Initialize the output array for the table\nvar tableData = [];\n\n// Iterate over each level in the given data\ninputJson.levels.forEach(function(level) {\n    // Get the levelId\n    var levelId = level.levelId;\n    \n    // Iterate over each row in the gridData\n    level.gridData.forEach(function(row, rowIndex) {\n        // Iterate over each column in the row\n        row.forEach(function(number, columnIndex) {\n            // Create an object representing a row in the table\n            var rowData = {\n                levelId: levelId,\n                gridId: rowIndex + 1, // Assuming gridId starts from 1\n                area: columnIndex + 1,\n                occupancy: number\n            };\n\n            // Add the row object to the tableData array\n            if (levelId== global.get(\"level_index\")){\n                tableData.push(rowData);\n    }\n        });\n    });\n});\n\n\nmsg.payload = tableData\nmsg.topic = \"occupancyData\"\n// The resulting tableData can now be used as the input to the ui_table node\n//msg.ui_control.customHeight = 10\nreturn msg\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -87,33 +88,15 @@
         "y": 500,
         "wires": [
             [
-                "28165f77506ed0fd",
-                "e8dcb451b6e6c03c"
+                "603b2cf9f9a9da97",
+                "ac3c72c1f561aec2"
             ]
         ]
     },
     {
-        "id": "28165f77506ed0fd",
-        "type": "ui_table",
-        "z": "f6f2187d.f17ca8",
-        "group": "43742323721202ad",
-        "name": "Occupancy",
-        "order": 1,
-        "width": 15,
-        "height": 5,
-        "columns": [],
-        "outputs": 1,
-        "cts": true,
-        "x": 590,
-        "y": 500,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "837a2339ba8c9a8c",
+        "id": "8a6fec1584ca9e7d",
         "type": "mqtt in",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "",
         "topic": "rfid/added",
         "qos": "2",
@@ -127,15 +110,15 @@
         "y": 740,
         "wires": [
             [
-                "5b6da11c6aaf522f",
-                "38ba88155c787b49"
+                "87989b75cae1bc14",
+                "0c5bf4e1eff4c52c"
             ]
         ]
     },
     {
-        "id": "5b6da11c6aaf522f",
+        "id": "87989b75cae1bc14",
         "type": "debug",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "debug 12",
         "active": true,
         "tosidebar": true,
@@ -150,9 +133,9 @@
         "wires": []
     },
     {
-        "id": "38ba88155c787b49",
+        "id": "0c5bf4e1eff4c52c",
         "type": "function",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "function 6",
         "func": "// Function node code\n//var dynamicData = msg.payload;\n//msg.payload = [dynamicData];\n//return msg;\n\n// Initialize lists for topics rfid/added and rfid/removed\n//context.set('rfidAddedList', []);\n//context.set('rfidRemovedList', []);\n\n// Function node code\nvar msgPayload = msg.payload;\nvar msgTopic = msg.topic;\n\n// Check the topic and add message to the corresponding list\nif (msgTopic === \"rfid/added\") {\n    var rfidAddedList = context.get('rfidAddedList');\n    rfidAddedList.push(msgPayload);\n    context.set('rfidAddedList', rfidAddedList);\n    console.log('Added to rfidAddedList:', msgPayload);\n} else if (msgTopic === \"rfid/removed\") {\n    var rfidRemovedList = context.get('rfidRemovedList');\n    rfidRemovedList.push(msgPayload);\n    context.set('rfidRemovedList', rfidRemovedList);\n    console.log('Added to rfidRemovedList:', msgPayload);\n}\n\n// Remove data from rfid/added if book id is present in rfid/removed\nvar rfidAddedList = context.get('rfidAddedList');\nvar rfidRemovedList = context.get('rfidRemovedList');\n\n rfidRemovedList.forEach(function (removedItem) {\n     rfidAddedList = rfidAddedList.filter(function (addedItem) {\n         return addedItem.book_id !== removedItem.book_id;\n     });\n    \n });\n\n rfidRemovedList = [];\n\n// rfidRemovedList.forEach(function (removedItem) {\n//     rfidAddedList.forEach (function (addedItem) {\n//         if(removedItem.book_id==addedItem.book_id)\n//         rfidAddedList.\n\n//     });\n// });\n\ncontext.set('rfidAddedList', rfidAddedList);\ncontext.set('rfidRemovedList', rfidRemovedList);\n\n\n// Set the filtered list as the payload of the returned message\nmsg.payload = rfidAddedList;\n\nreturn msg;\n\n\n",
         "outputs": 1,
@@ -165,33 +148,15 @@
         "y": 640,
         "wires": [
             [
-                "38d0b58ab84cae5a",
-                "b6ed7e50acf18b61"
+                "ccc042ef934988d5",
+                "e5d119f803c2e2bd"
             ]
         ]
     },
     {
-        "id": "38d0b58ab84cae5a",
-        "type": "ui_table",
-        "z": "f6f2187d.f17ca8",
-        "group": "3b6bfc22a1cc3be3",
-        "name": "Books",
-        "order": 1,
-        "width": 10,
-        "height": 5,
-        "columns": [],
-        "outputs": 1,
-        "cts": true,
-        "x": 1510,
-        "y": 580,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "f55f57ca485100fb",
+        "id": "c4c0a0468399c73c",
         "type": "mqtt in",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "",
         "topic": "rfid/removed",
         "qos": "2",
@@ -205,15 +170,15 @@
         "y": 640,
         "wires": [
             [
-                "614a56394c0c6b2f",
-                "38ba88155c787b49"
+                "48ce546cd5b61545",
+                "0c5bf4e1eff4c52c"
             ]
         ]
     },
     {
-        "id": "614a56394c0c6b2f",
+        "id": "48ce546cd5b61545",
         "type": "debug",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "debug 13",
         "active": true,
         "tosidebar": true,
@@ -227,9 +192,9 @@
         "wires": []
     },
     {
-        "id": "f926f4aacca975be",
+        "id": "a6442e0eea6f893d",
         "type": "ui_template",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "group": "43742323721202ad",
         "name": "",
         "order": 2,
@@ -248,14 +213,14 @@
         ]
     },
     {
-        "id": "746e9658ad1a525e",
+        "id": "6e04c57f45a644cf",
         "type": "ui_heat_map",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "group": "4bb69fb6bf4d5b20",
         "order": 1,
-        "width": 8,
-        "height": 5,
-        "name": "",
+        "width": "8",
+        "height": "5",
+        "name": "occupancy heat map",
         "rows": 0,
         "columns": 0,
         "minMax": false,
@@ -274,20 +239,20 @@
         "legendType": "vals",
         "legendDecimals": 0,
         "legendCount": 2,
-        "x": 540,
+        "x": 580,
         "y": 660,
         "wires": [
             [
-                "28ad34c4139abc52"
+                "9dc378d44be69dd1"
             ]
         ]
     },
     {
-        "id": "bba7d9c73ba145de",
+        "id": "9154003cf353de0f",
         "type": "function",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "function 7",
-        "func": "// Check if 'levels' exists and is an array within 'msg.payload'\nif (!msg.payload || !Array.isArray(msg.payload.levels)) {\n    node.error(\"Payload is not an object or 'levels' is not an array\");\n    return null; // Stop the flow because the data structure is not as expected\n}\n\n// Select the level whose data you want to display (0 for the first level)\nconst levelIndex = 0;\n\n// Check if the selected level exists\nif (!msg.payload.levels[levelIndex]) {\n    node.error(\"Specified level index does not exist in the 'levels' array\");\n    return null; // Stop the flow because the selected level is not present\n}\n\n// Retrieve the grid data for the chosen level\nconst gridData = msg.payload.levels[levelIndex].gridData;\n\n// Flatten the 2D array to a 1D array\nconst flattenedData = gridData.reduce((acc, val) => acc.concat(val), []);\n\n// Since the heatmap node expects an array with a length equal to rows x columns,\n// and considering that the trailing zeroes should not be part of the heatmap,\n// we'll slice the array to contain only the first 7 values of each sub-array (non-zero values).\nconst expectedLength = 10 * 7; // 10 rows and 7 columns with non-zero values\nconst trimmedFlattenedData = flattenedData.slice(0, expectedLength);\n\n// Set the trimmed array as the new payload\nmsg.payload = trimmedFlattenedData;\n\n// Set the rows and columns dynamically (if the heatmap supports it)\n// If not, you must manually configure the heatmap node to have 10 rows and 7 columns.\nmsg.rows = 10;\nmsg.columns = 7;\n\n// Return the message to be passed to the heatmap node\nreturn msg;",
+        "func": "// Check if 'levels' exists and is an array within 'msg.payload'\nif (!msg.payload || !Array.isArray(msg.payload.levels)) {\n    node.error(\"Payload is not an object or 'levels' is not an array\");\n    return null; // Stop the flow because the data structure is not as expected\n}\n\n// Select the level whose data you want to display (0 for the first level)\nlet levelIndex = global.get(\"level_index\")-1;\n// Check if the selected level exists\nif (!msg.payload.levels[levelIndex]) {\n    node.error(\"Specified level index does not exist in the 'levels' array\");\n    return null; // Stop the flow because the selected level is not present\n}\nglobal.set(\"data\",msg.payload)\n// Retrieve the grid data for the chosen level\nconst gridData = msg.payload.levels[levelIndex].gridData;\n\n// Flatten the 2D array to a 1D array\nconst flattenedData = gridData.reduce((acc, val) => acc.concat(val), []);\n\n// Since the heatmap node expects an array with a length equal to rows x columns,\n// and considering that the trailing zeroes should not be part of the heatmap,\n// we'll slice the array to contain only the first 7 values of each sub-array (non-zero values).\nconst expectedLength = 10 * 7; // 10 rows and 7 columns with non-zero values\nconst trimmedFlattenedData = flattenedData.slice(0, expectedLength);\n\n// Set the trimmed array as the new payload\nmsg.payload = trimmedFlattenedData;\n\n// Set the rows and columns dynamically (if the heatmap supports it)\n// If not, you must manually configure the heatmap node to have 10 rows and 7 columns.\nmsg.rows = 10;\nmsg.columns = 7;\n\n// Return the message to be passed to the heatmap node\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -298,14 +263,14 @@
         "y": 660,
         "wires": [
             [
-                "746e9658ad1a525e"
+                "6e04c57f45a644cf"
             ]
         ]
     },
     {
-        "id": "28ad34c4139abc52",
+        "id": "9dc378d44be69dd1",
         "type": "debug",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "debug 16",
         "active": true,
         "tosidebar": true,
@@ -319,9 +284,9 @@
         "wires": []
     },
     {
-        "id": "598cb7b306cd9f45",
+        "id": "e66af00af1996f33",
         "type": "ui_form",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "",
         "label": "",
         "group": "5c7b4f41206c356b",
@@ -367,14 +332,14 @@
         "y": 260,
         "wires": [
             [
-                "5fdb2d5ece0dc733"
+                "22ea6257817e600a"
             ]
         ]
     },
     {
-        "id": "cbd7703cfdf3d4a4",
+        "id": "134671dae4baf36f",
         "type": "ui_form",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "",
         "label": "",
         "group": "ba20ceea1c06be36",
@@ -404,14 +369,14 @@
         "y": 420,
         "wires": [
             [
-                "b6ed7e50acf18b61"
+                "e5d119f803c2e2bd"
             ]
         ]
     },
     {
-        "id": "e8dcb451b6e6c03c",
+        "id": "603b2cf9f9a9da97",
         "type": "function",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "function 8",
         "func": "var levelId = context.get('levelId');\nvar gridId = context.get('gridId');\nvar area = context.get('area');\nvar result = context.get('result');\n\nif (msg.topic == \"occupancyForm\") {\n  \n    context.set('levelId', msg.payload.levelId);\n    context.set('gridId', msg.payload.gridId);\n    context.set('area', msg.payload.area);\n\n}\n// Check if the actual table data is present in the message payload\nif ( msg.topic != \"occupancyForm\" && levelId) {\n    var tableData = msg.payload;\n\n    // Find the matching row in the table\n    var matchingRow = tableData.find(function (row) {\n\n        return row.levelId === levelId && row.gridId === gridId && row.area === area;\n    });\n\n    context.set('result', matchingRow.occupancy);\n\n    // Pass the resultTable to the output\n    msg.payload = context.get(\"result\");\n\n    return msg;\n} \n\n",
         "outputs": 1,
@@ -424,14 +389,14 @@
         "y": 260,
         "wires": [
             [
-                "082e4b04a00c7ed5"
+                "2ecf51522f66f857"
             ]
         ]
     },
     {
-        "id": "5fdb2d5ece0dc733",
+        "id": "22ea6257817e600a",
         "type": "function",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "function 9",
         "func": "\nreturn msg;",
         "outputs": 1,
@@ -444,14 +409,14 @@
         "y": 260,
         "wires": [
             [
-                "e8dcb451b6e6c03c"
+                "603b2cf9f9a9da97"
             ]
         ]
     },
     {
-        "id": "b6ed7e50acf18b61",
+        "id": "e5d119f803c2e2bd",
         "type": "function",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "function 10",
         "func": "var bookId = context.get('bookId');\n\n\nif (msg.topic == \"bookForm\") {\n    \n    context.set('bookId', msg.payload.Id);\n\n\n}\n\n// Check if the actual table data is present in the message payload\nif ( msg.topic != \"bookForm\" && bookId) {\n    var bookData = msg.payload;\n\n    // Find the matching row in the table\n    var matchingRow = bookData.find(function (row) {\n\n        return row.book_id === bookId \n    });\n\n    // Pass the resultTable to the output\n    if(matchingRow) {\n         msg.payload = matchingRow.shelf_id;\n\n    return msg;\n    }\n\n} \n\n",
         "outputs": 1,
@@ -464,14 +429,14 @@
         "y": 420,
         "wires": [
             [
-                "614210bc4775cea7"
+                "a6d597c681d63614"
             ]
         ]
     },
     {
-        "id": "082e4b04a00c7ed5",
+        "id": "2ecf51522f66f857",
         "type": "ui_text",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "group": "5c7b4f41206c356b",
         "order": 6,
         "width": 0,
@@ -490,9 +455,9 @@
         "wires": []
     },
     {
-        "id": "614210bc4775cea7",
+        "id": "a6d597c681d63614",
         "type": "ui_text",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "group": "ba20ceea1c06be36",
         "order": 6,
         "width": 0,
@@ -511,9 +476,9 @@
         "wires": []
     },
     {
-        "id": "e240159f25e87e44",
+        "id": "3f2b4cdfedf75229",
         "type": "ui_text",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "group": "a1f417dc8796d4a6",
         "order": 5,
         "width": 10,
@@ -532,9 +497,9 @@
         "wires": []
     },
     {
-        "id": "7ce4997c7ee0d3d9",
+        "id": "bbce98c12a2e5ff5",
         "type": "ui_media",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "group": "a1f417dc8796d4a6",
         "name": "",
         "width": 10,
@@ -555,9 +520,9 @@
         ]
     },
     {
-        "id": "9660ba11ffecb3a5",
+        "id": "55b6bb9110f681d8",
         "type": "ui_text",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "group": "a1f417dc8796d4a6",
         "order": 10,
         "width": 10,
@@ -576,9 +541,161 @@
         "wires": []
     },
     {
-        "id": "0036c63594cdecc6",
+        "id": "ac3c72c1f561aec2",
+        "type": "ui_table",
+        "z": "0e61c096bdee35e2",
+        "group": "43742323721202ad",
+        "name": "Occupancy",
+        "order": 1,
+        "width": 15,
+        "height": 5,
+        "columns": [],
+        "outputs": 1,
+        "cts": true,
+        "x": 590,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ccc042ef934988d5",
+        "type": "ui_table",
+        "z": "0e61c096bdee35e2",
+        "group": "3b6bfc22a1cc3be3",
+        "name": "Books",
+        "order": 1,
+        "width": 10,
+        "height": 5,
+        "columns": [],
+        "outputs": 1,
+        "cts": true,
+        "x": 1510,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "39ecbc859d100eaa",
+        "type": "ui_dropdown",
+        "z": "0e61c096bdee35e2",
+        "name": "",
+        "label": "SELECT THE  LEVEL ",
+        "tooltip": "",
+        "place": "Select level",
+        "group": "43742323721202ad",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "multiple": false,
+        "options": [
+            {
+                "label": "",
+                "value": "",
+                "type": "str"
+            }
+        ],
+        "payload": "",
+        "topic": "topic",
+        "topicType": "msg",
+        "className": "",
+        "x": 400,
+        "y": 780,
+        "wires": [
+            [
+                "a8165506c13c5a0a"
+            ]
+        ]
+    },
+    {
+        "id": "712ff4e53442665e",
+        "type": "function",
+        "z": "0e61c096bdee35e2",
+        "name": "function 11",
+        "func": "\nlet length = msg.payload.levels.length;\nconsole.log(length)\nlet newArray = new Array(length);\nmsg.options = Array.from({ length }, (_, i) => i + 1);\nreturn msg;\n\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 190,
+        "y": 760,
+        "wires": [
+            [
+                "39ecbc859d100eaa"
+            ]
+        ]
+    },
+    {
+        "id": "a8165506c13c5a0a",
+        "type": "function",
+        "z": "0e61c096bdee35e2",
+        "name": "function 12",
+        "func": "global.set(\"level_index\", msg.payload);\nmsg.payload = global.get(\"data\");\n\nreturn msg",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 590,
+        "y": 780,
+        "wires": [
+            [
+                "9da3b8c4c192807c",
+                "368f74f6beee79b7",
+                "9154003cf353de0f"
+            ]
+        ]
+    },
+    {
+        "id": "379b2850b86b875c",
+        "type": "ui_text",
+        "z": "0e61c096bdee35e2",
+        "group": "43742323721202ad",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 770,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "368f74f6beee79b7",
+        "type": "function",
+        "z": "0e61c096bdee35e2",
+        "name": "function 13",
+        "func": "msg.payload = \"this is a heat map for level \" + global.get(\"level_index\")\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 860,
+        "wires": [
+            [
+                "379b2850b86b875c"
+            ]
+        ]
+    },
+    {
+        "id": "7018b64076926590",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "abdd0722.1d2cc8",
         "order": 2,
@@ -586,9 +703,9 @@
         "height": 1
     },
     {
-        "id": "687d6df1abf84102",
+        "id": "dbc4fe646026865c",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "abdd0722.1d2cc8",
         "order": 3,
@@ -596,9 +713,9 @@
         "height": 1
     },
     {
-        "id": "0840e178a84fe1b1",
+        "id": "8d38287fda7f0550",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "abdd0722.1d2cc8",
         "order": 4,
@@ -606,9 +723,9 @@
         "height": 1
     },
     {
-        "id": "9782e336f5884578",
+        "id": "f287cd1bc7a4602a",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "abdd0722.1d2cc8",
         "order": 5,
@@ -616,9 +733,9 @@
         "height": 1
     },
     {
-        "id": "2b18af83a120f9aa",
+        "id": "878ef4d57546b120",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "abdd0722.1d2cc8",
         "order": 6,
@@ -626,9 +743,9 @@
         "height": 1
     },
     {
-        "id": "241ba5108aca675b",
+        "id": "9bb7830d647e8200",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 2,
@@ -636,9 +753,9 @@
         "height": 1
     },
     {
-        "id": "a18ac2973eac67fe",
+        "id": "d06dbdfd647ec5f1",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 3,
@@ -646,9 +763,9 @@
         "height": 1
     },
     {
-        "id": "02e4d3d61951c266",
+        "id": "16057d4e833b9e71",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 4,
@@ -656,9 +773,9 @@
         "height": 1
     },
     {
-        "id": "bf0b02159ca03a07",
+        "id": "5b171af18b07b926",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 6,
@@ -666,9 +783,9 @@
         "height": 1
     },
     {
-        "id": "84eccab330250eeb",
+        "id": "61292480fca002eb",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 7,
@@ -676,9 +793,9 @@
         "height": 1
     },
     {
-        "id": "ba2dc48e36814a3b",
+        "id": "f7d3afcad6625c3f",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 8,
@@ -686,9 +803,9 @@
         "height": 1
     },
     {
-        "id": "63611312a13527e5",
+        "id": "3f59f47de7aa9a9c",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 9,
@@ -696,9 +813,9 @@
         "height": 1
     },
     {
-        "id": "5856028b53cb9ee4",
+        "id": "77fce98dfa4f36d6",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 11,
@@ -706,9 +823,9 @@
         "height": 1
     },
     {
-        "id": "43f719cdcbb34945",
+        "id": "0592fa47d0d22e1f",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 12,
@@ -716,9 +833,9 @@
         "height": 1
     },
     {
-        "id": "345bea94a5bdfd43",
+        "id": "5cc54a8d6b8b59ea",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 13,
@@ -726,9 +843,9 @@
         "height": 1
     },
     {
-        "id": "77b6aa4a601c9c36",
+        "id": "bf177c87c36e2211",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 14,
@@ -736,9 +853,9 @@
         "height": 1
     },
     {
-        "id": "18dd0da1f8f7e83c",
+        "id": "f256f81359eed35b",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 15,
@@ -746,9 +863,9 @@
         "height": 1
     },
     {
-        "id": "f2671e14b707d2da",
+        "id": "63261128d01ecbff",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 16,
@@ -756,9 +873,9 @@
         "height": 1
     },
     {
-        "id": "86a1e78cc38b3e43",
+        "id": "93ec7f75529fd5ec",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 17,
@@ -766,9 +883,9 @@
         "height": 1
     },
     {
-        "id": "d42c511d61347eaf",
+        "id": "3383e3d1f82af529",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 18,
@@ -776,9 +893,9 @@
         "height": 1
     },
     {
-        "id": "ce4fd891ccd8e6da",
+        "id": "e5fc369b27e4da66",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 19,
@@ -786,9 +903,9 @@
         "height": 1
     },
     {
-        "id": "0518daf4b4ec0e1e",
+        "id": "359e1c31ceae3e70",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 20,
@@ -796,9 +913,9 @@
         "height": 1
     },
     {
-        "id": "2957c4b17310c92f",
+        "id": "dc2b2f9d3bfc2d75",
         "type": "ui_spacer",
-        "z": "f6f2187d.f17ca8",
+        "z": "0e61c096bdee35e2",
         "name": "spacer",
         "group": "a1f417dc8796d4a6",
         "order": 21,
@@ -837,17 +954,6 @@
         "sessionExpiry": ""
     },
     {
-        "id": "43742323721202ad",
-        "type": "ui_group",
-        "name": "Occupancy",
-        "tab": "2061408c1bfd4d4d",
-        "order": 1,
-        "disp": true,
-        "width": "15",
-        "collapse": false,
-        "className": "template"
-    },
-    {
         "id": "e3d50ca839aea857",
         "type": "mqtt-broker",
         "name": "apple",
@@ -879,15 +985,15 @@
         "sessionExpiry": ""
     },
     {
-        "id": "3b6bfc22a1cc3be3",
+        "id": "43742323721202ad",
         "type": "ui_group",
-        "name": "Books",
+        "name": "Occupancy",
         "tab": "2061408c1bfd4d4d",
-        "order": 2,
+        "order": 1,
         "disp": true,
-        "width": "10",
+        "width": "15",
         "collapse": false,
-        "className": "template2"
+        "className": "template"
     },
     {
         "id": "4bb69fb6bf4d5b20",
@@ -932,6 +1038,17 @@
         "width": "24",
         "collapse": false,
         "className": "template4"
+    },
+    {
+        "id": "3b6bfc22a1cc3be3",
+        "type": "ui_group",
+        "name": "Books",
+        "tab": "2061408c1bfd4d4d",
+        "order": 2,
+        "disp": true,
+        "width": "10",
+        "collapse": false,
+        "className": "template2"
     },
     {
         "id": "2061408c1bfd4d4d",

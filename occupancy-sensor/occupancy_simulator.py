@@ -41,7 +41,7 @@ class SimulatedOccupancySensor(OccupancySensor):
         self.client.loop_start()
 
 
-    def get_data(self):
+    def get_data(self,previous_data):
         #let's get a grid representation of our library
         cmd = """SELECT level_number FROM public.bookmanager_librarylevel ORDER BY id ASC """
         levels = self.connection.query(cmd)
@@ -50,7 +50,7 @@ class SimulatedOccupancySensor(OccupancySensor):
         rows=7
         cols=7
         syntethic_data={"levels":[]}
-        for level in levels:
+        for level_ind,level in enumerate(levels):
             level_number = level[0]
             current_level_data={}
             syntethic_data['levels'].append(current_level_data)
@@ -58,7 +58,15 @@ class SimulatedOccupancySensor(OccupancySensor):
             current_level_data['gridData'] = [[0 for i in range(10)] for j in range(10)]
             for i in range(rows):
                 for j in range(cols):
-                    current_level_data['gridData'][i][j] = round(random.uniform(0,9))
+                    if previous_data == None:
+                        current_level_data['gridData'][i][j] = round(random.uniform(0,9)) 
+                    else:
+                        current_level_data['gridData'][i][j] = previous_data['levels'][level_ind]['gridData'][i][j]
+                    
+                    current_level_data['gridData'][i][j] += random.randint(-2,3)
+                    current_level_data['gridData'][i][j] = max(current_level_data['gridData'][i][j],0)
+                    current_level_data['gridData'][i][j] = min(current_level_data['gridData'][i][j],10)
+
         print(syntethic_data)
         return syntethic_data
     
@@ -80,8 +88,9 @@ class SimulatedOccupancySensor(OccupancySensor):
 
 if __name__ == "__main__":
     sensor = SimulatedOccupancySensor()
+    data = None
     while True:
-        data=sensor.get_data()
+        data=sensor.get_data(data)
         sensor.publish_data(data)
         time.sleep(TIME_BETWEEN_READS)
 

@@ -1,6 +1,45 @@
 version: '3.8'
 services:
   
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: SMART_LIBRARY_DB
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    networks:
+      - SMART_LIBRARY_NETWORK
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "80:80"
+    networks:
+      - SMART_LIBRARY_NETWORK
+    environment:
+      PGADMIN_DEFAULT_EMAIL: smartlibraryteam@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+     
+
+
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    networks:
+      - SMART_LIBRARY_NETWORK
+
+  
   book_management:
     build: ./book_management
     volumes:
@@ -53,44 +92,7 @@ services:
     networks:
       - SMART_LIBRARY_NETWORK
   
-  postgres:
-    image: postgres:latest
-    environment:
-      POSTGRES_DB: SMART_LIBRARY_DB
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-    ports:
-      - "5432:5432"
-    networks:
-      - SMART_LIBRARY_NETWORK
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  pgadmin:
-    image: dpage/pgadmin4
-    ports:
-      - "80:80"
-    networks:
-      - SMART_LIBRARY_NETWORK
-    environment:
-      PGADMIN_DEFAULT_EMAIL: smartlibraryteam@example.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-     
-
-
-  mosquitto:
-    image: eclipse-mosquitto:latest
-    ports:
-      - "1883:1883"
-    volumes:
-      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
-      - mosquitto_data:/mosquitto/data
-      - mosquitto_log:/mosquitto/log
-    networks:
-      - SMART_LIBRARY_NETWORK
-
+  
 volumes:
   mosquitto_data:
   mosquitto_log:
